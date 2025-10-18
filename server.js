@@ -20,7 +20,7 @@ dotenv.config();
 connectDB();
 
 // Routes
-app.use("/api", contactRoutes);
+app.use("/api/contacts", contactRoutes);
 app.use('/api/posts', postRoutes);
 app.use('/api/jobs', jobRoutes);
 app.use('/api/auth', authRoutes);

@@ -13,8 +13,7 @@ const {
 // Get all posts
 router.get('/', getAllPosts);
 
-// Get post by slug (must come before /:id route)
-router.get('/post/:slug', getPostBySlug);
+router.get('/slug/:slug', getPostBySlug);
 
 // Get post by ID
 router.get('/:id', getPostById);

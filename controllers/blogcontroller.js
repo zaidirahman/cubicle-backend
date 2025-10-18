@@ -1,5 +1,5 @@
-// controllers/blogController.js
 const Post = require('../models/Blog');
+const mongoose = require('mongoose');
 
 // Helper function to create URL-friendly slug
 const createSlug = (title) => {
@@ -15,7 +15,7 @@ const createSlug = (title) => {
 exports.getAllPosts = async (req, res) => {
   try {
     const { category, limit, featured } = req.query;
-    let query = {status: 'published' };
+    let query = { status: 'published' };
     
     if (category && category !== 'all') {
       query.category = category;
@@ -33,7 +33,6 @@ exports.getAllPosts = async (req, res) => {
     
     const posts = await postsQuery;
     
-    // Add slug to each post for frontend routing
     const postsWithSlug = posts.map(post => ({
       ...post.toObject(),
       slug: createSlug(post.title)
@@ -46,9 +45,14 @@ exports.getAllPosts = async (req, res) => {
   }
 };
 
-// Get post by ID
+// Get post by ID (with validation)
 exports.getPostById = async (req, res) => {
   try {
+    // Validate ObjectId format
+    if (!mongoose.Types.ObjectId.isValid(req.params.id)) {
+      return res.status(400).json({ msg: 'Invalid post ID format' });
+    }
+
     const post = await Post.findById(req.params.id);
     
     if (!post) {
@@ -61,9 +65,6 @@ exports.getPostById = async (req, res) => {
     });
   } catch (err) {
     console.error(err.message);
-    if (err.kind === 'ObjectId') {
-      return res.status(404).json({ msg: 'Post not found' });
-    }
     res.status(500).send('Server Error');
   }
 };
@@ -71,7 +72,7 @@ exports.getPostById = async (req, res) => {
 // Get post by slug (title-based URL)
 exports.getPostBySlug = async (req, res) => {
   try {
-    const posts = await Post.find({status: 'published'});
+    const posts = await Post.find({ status: 'published' });
     
     // Find post by matching slug
     const post = posts.find(p => createSlug(p.title) === req.params.slug);
@@ -115,6 +116,11 @@ exports.createPost = async (req, res) => {
 // Update an existing post
 exports.updatePost = async (req, res) => {
   try {
+    // Validate ObjectId format
+    if (!mongoose.Types.ObjectId.isValid(req.params.id)) {
+      return res.status(400).json({ msg: 'Invalid post ID format' });
+    }
+
     let post = await Post.findById(req.params.id);
     
     if (!post) {
@@ -133,9 +139,6 @@ exports.updatePost = async (req, res) => {
     });
   } catch (err) {
     console.error(err.message);
-    if (err.kind === 'ObjectId') {
-      return res.status(404).json({ msg: 'Post not found' });
-    }
     res.status(500).send('Server Error');
   }
 };
@@ -143,6 +146,11 @@ exports.updatePost = async (req, res) => {
 // Delete a post
 exports.deletePost = async (req, res) => {
   try {
+    // Validate ObjectId format
+    if (!mongoose.Types.ObjectId.isValid(req.params.id)) {
+      return res.status(400).json({ msg: 'Invalid post ID format' });
+    }
+
     const post = await Post.findById(req.params.id);
     
     if (!post) {
@@ -153,9 +161,6 @@ exports.deletePost = async (req, res) => {
     res.json({ msg: 'Post removed' });
   } catch (err) {
     console.error(err.message);
-    if (err.kind === 'ObjectId') {
-      return res.status(404).json({ msg: 'Post not found' });
-    }
     res.status(500).send('Server Error');
   }
 };

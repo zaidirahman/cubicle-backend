@@ -7,7 +7,7 @@ const JobSchema = new mongoose.Schema({
   location: { type: String, required: true },
   description: { type: String, required: true },
   requirements: { type: String, required: true },
-  status: { type: String, enum: ['active', 'closed'], default: 'active' },
+  status: { type: String, enum: ['active', 'closed'] },
   date: { type: Date, default: Date.now },
 });
 
